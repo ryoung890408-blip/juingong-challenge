@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbf6f1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="대학생을 위한 하루 5분, 7일 주인공(主人空) 관법 챌린지">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="주인공 챌린지">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;900&display=swap">
+  <title>대학생 7일 주인공(主人空) 챌린지 (출석부 & 과제 제출)</title>
+  <style>
+    :root {
+      --bg: #fbf6f1;
+      --glass: rgba(255, 255, 255, 0.62);
+      --line: rgba(90, 70, 130, 0.10);
+      --line-strong: rgba(90, 70, 130, 0.18);
+      --gold: #e0861c;
+      --gold-deep: #ff9a6b;
+      --violet: #8b7bff;
+      --violet-soft: rgba(139, 123, 255, 0.14);
+      --seal: #e8553f;
+      --success: #2fc48d;
+      --text-main: #2d2640;
+      --text-sub: #756e8c;
+      --surface: rgba(255, 255, 255, 0.72);
+      --track: rgba(90, 70, 130, 0.09);
+      --grad-hot: linear-gradient(120deg, #ffd98f 0%, #ffab84 45%, #ff8fab 100%);
+      --grad-text: linear-gradient(120deg, #f0891f 0%, #ff5f7e 55%, #8b6dff 100%);
+      --serif: 'Noto Serif KR', 'Nanum Myeongjo', 'AppleMyungjo', serif;
+    }
+    * { box-sizing: border-box; }
+    html { background-color: var(--bg); }
+    body {
+      margin: 0;
+      padding: calc(20px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
+      background-color: var(--bg);
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      color: var(--text-main);
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    /* ===== 배경: 오로라 + 거대한 空 ===== */
+    .bg-fx { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.55; will-change: transform; }
+    .orb.o1 { width: 60vmax; height: 60vmax; left: -20vmax; top: -22vmax; background: radial-gradient(circle, #cdbfff 0%, transparent 65%); animation: drift1 18s ease-in-out infinite alternate; }
+    .orb.o2 { width: 55vmax; height: 55vmax; right: -22vmax; bottom: -20vmax; background: radial-gradient(circle, #ffcfae 0%, transparent 62%); animation: drift2 22s ease-in-out infinite alternate; opacity: 0.7; }
+    .orb.o3 { width: 38vmax; height: 38vmax; right: -8vmax; top: 10vh; background: radial-gradient(circle, #ffc4d8 0%, transparent 60%); animation: drift1 26s ease-in-out infinite alternate-reverse; opacity: 0.55; }
+    @keyframes drift1 { to { transform: translate(8vmax, 10vmax) scale(1.1); } }
+    @keyframes drift2 { to { transform: translate(-10vmax, -6vmax) scale(1.15); } }
+    .kanji-bg {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -52%);
+      font-family: var(--serif); font-weight: 900; font-size: min(120vw, 900px); line-height: 1;
+      color: transparent; -webkit-text-stroke: 1.5px rgba(232, 120, 90, 0.12);
+      user-select: none;
+    }
+    .grain {
+      position: absolute; inset: -50%; opacity: 0.05; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    h1, p.desc, .subtitle-box, .history-card { word-break: keep-all; overflow-wrap: break-word; }
+
+    /* ===== 메인 카드 (그라데이션 테두리) ===== */
+    .app-container {
+      position: relative; z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      background: var(--glass);
+      -webkit-backdrop-filter: blur(22px) saturate(140%);
+      backdrop-filter: blur(22px) saturate(140%);
+      border-radius: 30px;
+      padding: 22px 20px 26px;
+      text-align: center;
+      border: 1px solid transparent;
+      background-clip: padding-box;
+      box-shadow: 0 24px 60px rgba(120, 90, 150, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    .app-container::before {
+      content: ""; position: absolute; inset: -1px; border-radius: 31px; padding: 1px; z-index: -1;
+      background: conic-gradient(from var(--ang, 0deg), rgba(255,190,120,0.8), rgba(190,175,255,0.4), rgba(255,150,180,0.7), rgba(190,175,255,0.4), rgba(255,190,120,0.8));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      animation: spin 8s linear infinite;
+    }
+    @property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+    @keyframes spin { to { --ang: 360deg; } }
+
+    /* ===== 브랜드 헤더 ===== */
+    .brand { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .brand-left { display: flex; align-items: center; gap: 10px; text-align: left; }
+    .brand-seal {
+      width: 38px; height: 38px; border-radius: 9px; display: grid; place-items: center;
+      background: var(--seal); color: #fff3e6; font-family: var(--serif); font-weight: 900; font-size: 1.15rem;
+      box-shadow: 0 6px 18px rgba(232, 65, 47, 0.45), inset 0 0 0 2px rgba(255, 230, 210, 0.35);
+      transform: rotate(-6deg);
+    }
+    .brand-title { font-family: var(--serif); font-weight: 900; font-size: 1rem; letter-spacing: 0.5px; line-height: 1.15; }
+    .brand-title small { display: block; font-family: 'Pretendard', sans-serif; font-weight: 700; font-size: 0.66rem; letter-spacing: 2.5px; color: var(--gold); margin-top: 2px; }
+    .brand-count {
+      font-size: 0.72rem; font-weight: 800; color: var(--text-main); letter-spacing: 0.5px;
+      padding: 7px 11px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line-strong);
+    }
+    .brand-count b { color: var(--gold); font-size: 0.95rem; }
+
+    /* ===== 탭 ===== */
+    .nav-tabs {
+      position: relative; display: flex;
+      background: var(--surface);
+      border-radius: 16px; padding: 5px; margin-bottom: 22px;
+      border: 1px solid var(--line);
+    }
+    .nav-tabs::after {
+      content: ""; position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc(50% - 5px);
+      border-radius: 12px; background: var(--grad-hot);
+      box-shadow: 0 6px 18px rgba(255, 140, 110, 0.3);
+      transition: transform 0.45s cubic-bezier(.2, .9, .25, 1.2);
+    }
+    .nav-tabs.board::after { transform: translateX(100%); }
+    .nav-btn {
+      position: relative; z-index: 1; flex: 1;
+      background: transparent; color: var(--text-sub);
+      border: none; padding: 11px 0; font: inherit; font-size: 0.86rem; font-weight: 800;
+      border-radius: 12px; cursor: pointer; transition: color 0.3s;
+    }
+    .nav-btn.active { color: #4a2416; }
+
+    /* ===== 진행 바 ===== */
+    .progress { display: flex; gap: 6px; margin-bottom: 18px; }
+    .progress i { flex: 1; height: 5px; border-radius: 5px; background: var(--track); position: relative; overflow: hidden; }
+    .progress i::after { content: ""; position: absolute; inset: 0; background: var(--grad-hot); transform: scaleX(0); transform-origin: left; transition: transform 0.6s ease; }
+    .progress i.on::after { transform: scaleX(1); }
+    .progress i.now::after { transform: scaleX(1); animation: pulseBar 1.6s ease-in-out infinite; }
+    @keyframes pulseBar { 50% { opacity: 0.45; } }
+
+    .step-indicator {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.72rem; color: var(--gold); letter-spacing: 1.5px;
+      margin-bottom: 12px; font-weight: 800;
+      padding: 6px 12px; border-radius: 999px;
+      background: rgba(255, 198, 92, 0.1); border: 1px solid rgba(255, 198, 92, 0.28);
+    }
+    .step-indicator::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+    h1 {
+      font-family: var(--serif);
+      font-size: 1.62rem;
+      margin: 0 0 14px 0;
+      font-weight: 900;
+      line-height: 1.38;
+      letter-spacing: -0.5px;
+    }
+    .hl {
+      background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    p.desc {
+      color: var(--text-sub);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      margin: 0 0 20px;
+    }
+    .fade-in { animation: rise 0.6s cubic-bezier(.2, .8, .2, 1) both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } }
+
+    /* ===== 태그 ===== */
+    .tag-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .tag-btn {
+      display: flex; align-items: center; gap: 8px; text-align: left;
+      background: var(--surface); color: var(--text-main);
+      border: 1px solid var(--line-strong); border-radius: 14px;
+      padding: 11px 12px; font: inherit; font-size: 0.8rem; font-weight: 600; line-height: 1.3;
+      cursor: pointer; transition: all 0.25s; word-break: keep-all;
+    }
+    .tag-btn .emo { font-size: 1.15rem; flex: none; }
+    .tag-btn:hover { border-color: rgba(255, 198, 92, 0.55); transform: translateY(-2px); }
+    .tag-btn.active {
+      background: linear-gradient(135deg, rgba(255, 198, 92, 0.22), rgba(255, 79, 123, 0.18));
+      border-color: #ffab84; color: var(--text-main);
+      box-shadow: 0 6px 20px rgba(255, 138, 61, 0.25);
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      border-radius: 14px;
+      padding: 14px 15px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 16px;
+      line-height: 1.55;
+      resize: none;
+      margin-bottom: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    textarea::placeholder, input::placeholder { color: #aaa3bf; }
+    textarea:focus, input[type="text"]:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(255, 198, 92, 0.14); }
+
+    /* ===== 버튼 ===== */
+    .btn {
+      position: relative; overflow: hidden;
+      background: var(--grad-hot);
+      color: #4a2416;
+      border: none;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font: inherit; font-size: 0.98rem; font-weight: 900; letter-spacing: -0.2px;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 10px 24px rgba(255, 140, 110, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn::after {
+      content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+      background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+      transform: skewX(-20deg); animation: shine 3.2s ease-in-out infinite;
+    }
+    @keyframes shine { 0%, 60% { left: -60%; } 100% { left: 130%; } }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(255, 140, 110, 0.42), inset 0 1px 0 rgba(255,255,255,0.7); }
+    .btn:active { transform: translateY(1px) scale(0.99); }
+    .btn-success { background: linear-gradient(120deg, #a8f5d6, #6fe0b5); color: #0d4a34; margin-bottom: 8px; box-shadow: 0 10px 24px rgba(47, 196, 141, 0.25), inset 0 1px 0 rgba(255,255,255,0.5); }
+    .btn-ghost { background: var(--surface); color: var(--text-main); box-shadow: inset 0 0 0 1px var(--line-strong); font-size: 0.9rem; padding: 13px; }
+    .btn-ghost::after, .btn-outline::after { display: none; }
+    .btn-outline {
+      background: transparent; color: var(--text-sub); box-shadow: none;
+      border: 1px dashed var(--line-strong); margin-top: 10px; font-size: 0.82rem; font-weight: 600; padding: 11px;
+    }
+    .btn-outline:hover { box-shadow: none; color: var(--seal); border-color: rgba(232, 65, 47, 0.5); }
+
+    /* ===== 타이머 ===== */
+    .timer-badge {
+      display: inline-block;
+      font-family: var(--serif); font-weight: 900; font-size: 2.6rem; line-height: 1;
+      letter-spacing: 2px; font-variant-numeric: tabular-nums;
+      background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent;
+      margin: 4px 0 8px;
+      filter: drop-shadow(0 4px 14px rgba(255, 140, 110, 0.25));
+    }
+    .time-bar { height: 3px; border-radius: 3px; background: var(--track); margin: 0 auto 6px; width: 70%; overflow: hidden; }
+    .time-bar i { display: block; height: 100%; width: 100%; background: var(--grad-hot); transform-origin: left; transition: transform 1s linear; }
+
+    /* ===== 호흡 오브 ===== */
+    .breath-circle-wrap {
+      position: relative; height: 250px;
+      display: flex; justify-content: center; align-items: center;
+      margin: 6px 0;
+    }
+    .ring { position: absolute; width: 120px; height: 120px; border-radius: 50%; border: 1.5px solid rgba(255, 198, 92, 0.5); animation: ripple 4s ease-out infinite; }
+    .ring.r2 { animation-delay: 1.33s; border-color: rgba(139, 123, 255, 0.55); }
+    .ring.r3 { animation-delay: 2.66s; border-color: rgba(255, 79, 123, 0.5); }
+    @keyframes ripple { from { transform: scale(0.9); opacity: 0.9; } to { transform: scale(2.1); opacity: 0; } }
+    .breath-circle {
+      position: relative;
+      width: 120px; height: 120px; border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.75), transparent 35%),
+        radial-gradient(circle, #ffe0a8 0%, #ffaaa8 55%, #c3b3ff 100%);
+      box-shadow: 0 0 40px rgba(255, 160, 130, 0.45), 0 0 90px rgba(170, 155, 255, 0.35), inset 0 -10px 30px rgba(140, 110, 220, 0.3);
+      display: flex; justify-content: center; align-items: center;
+      font-weight: 900; font-size: 0.92rem; color: #fff;
+      text-shadow: 0 1px 6px rgba(150, 70, 90, 0.45);
+      transition: transform 4s cubic-bezier(.45, 0, .25, 1), box-shadow 4s ease;
+    }
+    .breath-expand {
+      transform: scale(1.55);
+      box-shadow: 0 0 60px rgba(255, 170, 140, 0.6), 0 0 140px rgba(170, 155, 255, 0.45), inset 0 -10px 30px rgba(140, 110, 220, 0.3);
+    }
+
+    /* ===== 관법 자막 ===== */
+    .trouble-chip {
+      display: inline-block; max-width: 100%;
+      font-size: 0.82rem !important; font-weight: 600; color: var(--text-sub) !important;
+      padding: 8px 14px; border-radius: 12px; margin: 4px 0 10px !important;
+      background: var(--surface); border: 1px dashed var(--line-strong);
+      text-decoration: line-through; text-decoration-color: rgba(255, 79, 123, 0.7); text-decoration-thickness: 1.5px;
+    }
+    .wave { display: flex; justify-content: center; align-items: center; gap: 4px; height: 30px; margin: 4px 0 2px; }
+    .wave i { width: 4px; border-radius: 4px; background: var(--grad-text); animation: wave 1.1s ease-in-out infinite; }
+    .wave i:nth-child(1) { animation-delay: -0.9s; } .wave i:nth-child(2) { animation-delay: -0.7s; }
+    .wave i:nth-child(3) { animation-delay: -0.5s; } .wave i:nth-child(4) { animation-delay: -0.3s; }
+    .wave i:nth-child(5) { animation-delay: -0.1s; } .wave i:nth-child(6) { animation-delay: -0.6s; }
+    .wave i:nth-child(7) { animation-delay: -0.2s; }
+    @keyframes wave { 0%, 100% { height: 6px; opacity: 0.5; } 50% { height: 28px; opacity: 1; } }
+    .subtitle-box {
+      position: relative;
+      background: linear-gradient(160deg, rgba(205, 191, 255, 0.35), rgba(255, 207, 174, 0.3));
+      border: 1px solid var(--line-strong);
+      padding: 26px 22px;
+      border-radius: 20px;
+      margin: 12px 0 18px;
+      min-height: 140px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-weight: 600;
+      font-size: 1.08rem; line-height: 1.75;
+      color: var(--text-main);
+    }
+    .subtitle-box::before {
+      content: "“"; position: absolute; top: -18px; left: 16px;
+      font-family: var(--serif); font-size: 4rem; line-height: 1; color: var(--gold);
+      text-shadow: none;
+    }
+    .sub-swap { animation: rise 0.9s cubic-bezier(.2, .8, .2, 1) both; }
+
+    /* ===== 슬라이더 ===== */
+    .slider-wrap {
+      margin: 6px 0 16px; text-align: left; padding: 16px 16px 12px;
+      border-radius: 18px; background: var(--surface); border: 1px solid var(--line);
+    }
+    .slider-wrap label { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.86rem; color: var(--text-sub); font-weight: 600; }
+    #peaceVal { font-family: var(--serif); font-size: 1.7rem; font-weight: 900; }
+    input[type="range"] {
+      -webkit-appearance: none; appearance: none; width: 100%; height: 10px; margin: 14px 0 4px;
+      border-radius: 10px; outline: none; cursor: pointer;
+      background: linear-gradient(90deg, #ffd98f, #ffab84, #ff8fab) 0 / var(--p, 85%) 100% no-repeat, var(--track);
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%;
+      background: #fff; border: 4px solid var(--gold-deep); box-shadow: 0 3px 10px rgba(255, 140, 110, 0.45);
+    }
+    input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 4px solid var(--gold-deep); }
+    .scale-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaa3bf; }
+
+    /* ===== 출석부: 낙관 도장 ===== */
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 4px 0 14px; }
+    .stat {
+      padding: 14px 6px 12px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line);
+    }
+    .stat b { display: block; font-family: var(--serif); font-weight: 900; font-size: 1.55rem; line-height: 1.1; }
+    .stat span { font-size: 0.7rem; color: var(--text-sub); font-weight: 600; letter-spacing: 0.3px; }
+    .stat.hot b { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+    .stamp-board {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+      margin: 0 0 18px 0;
+      padding: 18px 8px 14px;
+      border-radius: 20px;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 6px),
+        linear-gradient(180deg, #f3e7cf, #e6d3ad);
+      box-shadow: inset 0 0 30px rgba(120, 80, 30, 0.35), 0 8px 24px rgba(150, 110, 70, 0.16);
+    }
+    .stamp-slot { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+    .stamp-circle {
+      width: 100%; max-width: 40px; aspect-ratio: 1; border-radius: 50%;
+      border: 1.5px dashed rgba(90, 60, 30, 0.35);
+      display: flex; justify-content: center; align-items: center;
+      font-size: 0.8rem; font-weight: 800; color: rgba(90, 60, 30, 0.45);
+    }
+    .stamp-circle.stamped {
+      border-radius: 8px; border: none;
+      background: var(--seal);
+      color: #fff1e4;
+      font-family: var(--serif); font-weight: 900; font-size: 1.25rem;
+      box-shadow: inset 0 0 0 2.5px rgba(255, 230, 210, 0.75), inset 0 0 0 4px var(--seal), 0 2px 0 rgba(120, 20, 10, 0.25);
+      transform: rotate(var(--rot, -6deg));
+      opacity: 0.93;
+      -webkit-mask-image: radial-gradient(circle at 30% 30%, #000 60%, rgba(0,0,0,0.82) 100%);
+    }
+    .stamp-circle.just { animation: thud 0.55s cubic-bezier(.3, 1.6, .5, 1) both; }
+    @keyframes thud { 0% { transform: scale(2.6) rotate(18deg); opacity: 0; } 60% { opacity: 1; } 100% { transform: scale(1) rotate(var(--rot, -6deg)); } }
+    .stamp-label { font-size: 0.58rem; font-weight: 800; color: rgba(90, 60, 30, 0.7); white-space: nowrap; }
+
+    .complete-banner {
+      background: linear-gradient(135deg, rgba(62, 230, 168, 0.18), rgba(255, 198, 92, 0.14));
+      border: 1px solid rgba(62, 230, 168, 0.55); color: #137a55;
+      border-radius: 16px; padding: 14px; margin-bottom: 16px; font-size: 0.9rem; line-height: 1.6; font-weight: 700;
+    }
+
+    .section-label { text-align: left; font-size: 0.74rem; font-weight: 800; letter-spacing: 1.5px; color: var(--text-sub); margin: 0 2px 10px; }
+    .history-list {
+      text-align: left;
+      max-height: 260px;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 10px;
+      margin-bottom: 20px; padding-right: 2px;
+    }
+    .history-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 14px 14px 18px;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .history-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--grad-hot); }
+    .history-card.empty::before { display: none; }
+    .history-header {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      font-weight: 800; font-size: 0.78rem; margin-bottom: 8px;
+    }
+    .history-header .day { color: var(--gold); }
+    .history-header .meta { color: var(--text-sub); font-weight: 600; font-size: 0.72rem; text-align: right; }
+    .peace-pill { display: inline-block; margin-left: 4px; padding: 2px 7px; border-radius: 999px; background: var(--violet-soft); color: #5a4bd6; font-weight: 800; }
+    .history-card .row { margin-bottom: 3px; }
+    .history-card .row strong { color: var(--text-main); font-weight: 700; margin-right: 4px; }
+    .history-card .row.t { color: var(--text-sub); }
+
+    .submit-box {
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+    .submit-title {
+      font-size: 1rem; font-weight: 900; font-family: var(--serif);
+      color: var(--text-main); margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .submit-title .sub { font-family: 'Pretendard', sans-serif; font-size: 0.68rem; color: var(--gold); font-weight: 700; padding: 4px 9px; border-radius: 999px; background: rgba(255,198,92,0.1); flex: none; }
+    .student-inputs { display: flex; gap: 8px; }
+    .student-inputs input, .submit-box input { margin-bottom: 8px; padding: 12px 13px; }
+    .btn-row { display: flex; gap: 8px; }
+
+    .dissolve { animation: dissolveEffect 1s forwards; }
+    @keyframes dissolveEffect {
+      0% { opacity: 1; transform: scale(1); filter: blur(0); }
+      100% { opacity: 0; transform: scale(0.85) translateY(-30px); filter: blur(10px); }
+    }
+    .hidden { display: none !important; }
+
+    /* ===== 설치 배너 ===== */
+    .install-bar { display: none; align-items: center; justify-content: space-between; gap: 10px; text-align: left;
+      background: var(--violet-soft); border: 1px solid rgba(139, 123, 255, 0.45); border-radius: 14px;
+      padding: 10px 12px; margin-bottom: 16px; font-size: 0.82rem; line-height: 1.45; color: var(--text-main); word-break: keep-all; }
+    .install-bar.show { display: flex; }
+    .install-bar .btn { width: auto; padding: 8px 14px; font-size: 0.8rem; flex: none; border-radius: 10px; }
+    .install-bar .x { background: transparent; border: none; color: var(--text-sub); font-size: 1.1rem; cursor: pointer; padding: 4px 6px; flex: none; }
+    .install-bar .tip b { color: var(--gold); }
+    @media (display-mode: standalone) { .install-bar { display: none !important; } }
+
+    /* ===== 축하 파티클 ===== */
+    .burst { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+    .burst i { position: absolute; top: -20px; width: 9px; height: 14px; border-radius: 2px; animation: fall linear forwards; }
+    @keyframes fall { to { transform: translate(var(--dx), 110vh) rotate(var(--r)); } }
+
+    @media (max-width: 360px) {
+      h1 { font-size: 1.4rem; }
+      .tag-group { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+      .breath-circle { transition-duration: 1s; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-fx" aria-hidden="true">
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
+  <div class="kanji-bg">空</div>
+  <div class="grain"></div>
+</div>
+
+<div class="app-container">
+  <div class="install-bar" id="installBar" role="region" aria-label="홈 화면에 추가">
+    <div class="tip" id="installTip">앱처럼 쓰려면 홈 화면에 추가하세요.</div>
+    <button class="btn" id="installBtn" type="button">홈 화면에 추가</button>
+    <button class="x" id="installClose" type="button" aria-label="닫기">✕</button>
+  </div>
+
+  <div class="brand">
+    <div class="brand-left">
+      <div class="brand-seal">觀</div>
+      <div class="brand-title">주인공(主人空) 챌린지<small>7 DAYS · 5 MIN A DAY</small></div>
+    </div>
+    <div class="brand-count"><b id="brandCount">0</b> / 7일</div>
+  </div>
+
+  <div class="nav-tabs" id="navTabs">
+    <button class="nav-btn active" id="tabPractice" onclick="switchTab('practice')">오늘의 5분 실습</button>
+    <button class="nav-btn" id="tabBoard" onclick="switchTab('board')">출석부·제출 (<span id="stampCountNav">0</span>/7)</button>
+  </div>
+
+  <!-- [탭 1] 5분 실습 영역 -->
+  <div id="practiceView">
+    <div class="progress" id="progress"><i></i><i></i><i></i><i></i></div>
+
+    <div id="step1" class="fade-in">
+      <div class="step-indicator">STEP 1 · 생각 내려놓기 · 1분</div>
+      <h1>지금 내 에너지를 빼앗는<br><span class="hl">고민</span>은 무엇인가요?</h1>
+      <p class="desc">머릿속을 맴도는 걱정을 고르거나 적어보세요. 글자로 꺼내어 바라보는 순간, 과열된 생각이 멈추기 시작합니다.</p>
+
+      <div class="tag-group">
+        <button class="tag-btn" onclick="selectTag(this, '취업 준비와 앞으로의 진로를 생각하면 막막하고 두렵다.')"><span class="emo">🧭</span>취업·진로 막막함</button>
+        <button class="tag-btn" onclick="selectTag(this, '남들은 다 스펙 쌓고 앞서가는 것 같은데 나만 뒤처진 것 같아 조급하다.')"><span class="emo">🏃</span>비교·조급함</button>
+        <button class="tag-btn" onclick="selectTag(this, '해야 할 과제와 시험공부는 산더미인데 완벽하게 해낼 자신이 없어 미루게 된다.')"><span class="emo">📚</span>과제·완벽주의</button>
+        <button class="tag-btn" onclick="selectTag(this, '조별 과제나 대인관계에서 오는 피로감 때문에 마음이 지치고 답답하다.')"><span class="emo">🫧</span>인간관계·번아웃</button>
+      </div>
+
+      <textarea id="troubleInput" rows="3" placeholder="위에서 고르거나, 지금 나를 힘들게 하는 생각을 편하게 적어보세요."></textarea>
+      <button class="btn" onclick="submitTrouble()">주인공(主人空)에게 온전히 맡기기 →</button>
+    </div>
+
+    <div id="step2" class="hidden">
+      <div class="step-indicator">STEP 2 · 지(止) · 현재 감각 깨우기</div>
+      <h1>미래로 달아난 주의를<br><span class="hl">지금, 여기</span>로</h1>
+      <div class="timer-badge" id="timer2">01:00</div>
+      <div class="time-bar"><i id="bar2"></i></div>
+      <div class="breath-circle-wrap">
+        <div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div>
+        <div class="breath-circle" id="breathCircle">들숨 (4초)</div>
+      </div>
+      <p class="desc">빛의 움직임에 맞춰 숨을 고르며, 불안의 회로에서 빠져나와 지금 숨 쉬는 내 몸의 감각으로 돌아옵니다.</p>
+      <button class="btn btn-ghost" onclick="startStep3()">다음 단계로 바로 이동</button>
+    </div>
+
+    <div id="step3" class="hidden">
+      <div class="step-indicator">STEP 3 · 관(觀) · 주인공 관법</div>
+      <h1>주인공(主人空)에 맡기고<br><span class="hl">가만히 지켜보기</span></h1>
+      <div class="timer-badge" id="timer3">02:00</div>
+      <div class="time-bar"><i id="bar3"></i></div>
+      <p class="desc trouble-chip" id="userTroubleDisplay"></p>
+
+      <audio id="guideAudio" src="univ_voice.mp3"></audio>
+      <audio id="bgmAudio" src="univ_bgm.mp3" loop></audio>
+
+      <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="subtitle-box" id="subtitleText"></div>
+      <button class="btn" onclick="startStep4()">관법 마치기 · 실행 모드로 →</button>
+    </div>
+
+    <div id="step4" class="hidden">
+      <div class="step-indicator">STEP 4 · 회향(廻向) · 출석 도장</div>
+      <h1>마음의 무게가<br><span class="hl">조금 가벼워졌나요?</span></h1>
+      <p class="desc">불안은 주인공(主人空)에게 맡겨두었으니, 지금 5분 안에 시작할 수 있는 가장 작은 첫걸음을 적고 오늘의 도장을 찍으세요.</p>
+
+      <div class="slider-wrap">
+        <label for="peaceRange">지금 마음의 평온·몰입도 <strong id="peaceVal" class="hl">85%</strong></label>
+        <input type="range" id="peaceRange" min="0" max="100" value="85" oninput="updatePeace(this)">
+        <div class="scale-row"><span>소란함</span><span>고요함</span></div>
+      </div>
+
+      <input type="text" id="wisdomInput" placeholder="예: 노트북 켜서 레포트 제목만 적기">
+      <button class="btn" onclick="finishPractice()">觀 도장 찍고 바로 실행하기</button>
+    </div>
+  </div>
+
+  <!-- [탭 2] 출석부 및 리포트 제출 영역 -->
+  <div id="boardView" class="hidden">
+    <div class="step-indicator">CHALLENGE REPORT</div>
+    <h1>나의 7일 <span class="hl">훈습 출석부</span></h1>
+    <p class="desc">매일 5분, 주인공(主人空) 자리로 돌아온 기록입니다. 실습을 마친 뒤 아래에서 리포트를 제출하세요.</p>
+
+    <div class="stats">
+      <div class="stat hot"><b id="statDays">0</b><span>출석 일수</span></div>
+      <div class="stat"><b id="statPeace">–</b><span>평균 평온도</span></div>
+      <div class="stat"><b id="statLeft">7</b><span>남은 날</span></div>
+    </div>
+
+    <div class="stamp-board" id="stampBoard"></div>
+    <div id="completeMsg" class="hidden complete-banner">
+      🎉 7일 챌린지를 모두 완료했어요!<br>아래에서 이름과 학번을 적고 리포트를 제출해 주세요.
+    </div>
+    <div class="section-label">기록</div>
+    <div class="history-list" id="historyList"></div>
+
+    <!-- 과제 및 코칭 제출 박스 -->
+    <div class="submit-box">
+      <div class="submit-title">
+        <span>실습 리포트 제출</span>
+        <span class="sub">교수님·코치님 전달용</span>
+      </div>
+      <div class="student-inputs">
+        <input type="text" id="studentName" placeholder="이름" oninput="saveStudentInfo()">
+        <input type="text" id="studentId" placeholder="학과 또는 학번" oninput="saveStudentInfo()">
+      </div>
+      <input type="text" id="finalReflection" placeholder="한 줄 소감" oninput="saveStudentInfo()">
+
+      <button class="btn btn-success" onclick="copyReportToClipboard()">카톡·게시판 제출용 텍스트 복사</button>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="downloadReportFile()">리포트 파일(.txt)로 저장</button>
+      </div>
+    </div>
+
+    <button class="btn btn-outline" onclick="clearHistory()">출석 기록 초기화</button>
+  </div>
+</div>
+
+<script>
+  let userTrouble = "";
+  let step2Interval, breathInterval, step3Interval, subInterval;
+  const STORAGE_KEY = "univ_juingong_records";
+  const STUDENT_KEY = "univ_juingong_student";
+  const SEAL_ROT = [-7, 5, -3, 8, -9, 4, -5];
+  let justStamped = 0;
+
+  window.onload = () => {
+    loadStudentInfo();
+    renderBoard();
+    setProgress(1);
+  };
+
+  function setProgress(step) {
+    document.querySelectorAll('#progress i').forEach((el, i) => {
+      el.classList.toggle('on', i < step - 1);
+      el.classList.toggle('now', i === step - 1);
+    });
+  }
+
+  function showStep(id) {
+    const el = document.getElementById(id);
+    el.classList.remove('hidden', 'fade-in');
+    void el.offsetWidth;
+    el.classList.add('fade-in');
+  }
+
+  function setBar(id, frac) {
+    document.getElementById(id).style.transform = `scaleX(${Math.max(frac, 0)})`;
+  }
+
+  function updatePeace(el) {
+    document.getElementById('peaceVal').innerText = el.value + '%';
+    el.style.setProperty('--p', el.value + '%');
+  }
+
+  function switchTab(tab) {
+    const nav = document.getElementById('navTabs');
+    if (tab === 'practice') {
+      document.getElementById('practiceView').classList.remove('hidden');
+      document.getElementById('boardView').classList.add('hidden');
+      document.getElementById('tabPractice').classList.add('active');
+      document.getElementById('tabBoard').classList.remove('active');
+      nav.classList.remove('board');
+    } else {
+      renderBoard();
+      document.getElementById('practiceView').classList.add('hidden');
+      showStep('boardView');
+      document.getElementById('tabPractice').classList.remove('active');
+      document.getElementById('tabBoard').classList.add('active');
+      nav.classList.add('board');
+    }
+  }
+
+  function selectTag(btn, text) {
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('troubleInput').value = text;
+  }
+
+  function submitTrouble() {
+    const input = document.getElementById('troubleInput');
+    userTrouble = input.value.trim() || "미래에 대한 막막함과 잘해야 한다는 부담감";
+    input.classList.add('dissolve');
+    setTimeout(() => {
+      input.classList.remove('dissolve');
+      document.getElementById('step1').classList.add('hidden');
+      startStep2();
+    }, 900);
+  }
+
+  function fmt(sec) {
+    const m = Math.floor(sec / 60), s = sec % 60;
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  function clearAllTimers() {
+    clearInterval(step2Interval);
+    clearInterval(breathInterval);
+    clearInterval(step3Interval);
+    clearInterval(subInterval);
+    step2Interval = breathInterval = step3Interval = subInterval = null;
+  }
+
+  function stopAudio() {
+    const g = document.getElementById('guideAudio');
+    const b = document.getElementById('bgmAudio');
+    g.pause(); b.pause();
+    try { g.currentTime = 0; b.currentTime = 0; } catch (e) {}
+  }
+
+  function startStep2() {
+    clearAllTimers();
+    showStep('step2');
+    setProgress(2);
+    let timeLeft = 60;
+    const circle = document.getElementById('breathCircle');
+    circle.classList.remove('breath-expand');
+    document.getElementById('timer2').innerText = fmt(timeLeft);
+    setBar('bar2', 1);
+    let phase = 0;
+
+    // 들숨(확장) → 머묾(유지) → 날숨(수축), 각 4초
+    const runBreath = () => {
+      if (phase === 0) {
+        circle.innerText = "들숨 (4초)";
+        circle.classList.add('breath-expand');
+        phase = 1;
+      } else if (phase === 1) {
+        circle.innerText = "머묾 (4초)";
+        phase = 2;
+      } else {
+        circle.innerText = "날숨 (4초)";
+        circle.classList.remove('breath-expand');
+        phase = 0;
+      }
+    };
+    runBreath();
+    breathInterval = setInterval(runBreath, 4000);
+
+    step2Interval = setInterval(() => {
+      timeLeft--;
+      document.getElementById('timer2').innerText = fmt(Math.max(timeLeft, 0));
+      setBar('bar2', timeLeft / 60);
+      if (timeLeft <= 0) startStep3();
+    }, 1000);
+  }
+
+  // 음성 안내(univ_voice.mp3) 실제 길이에 맞춘 자막 타임라인 (초 단위 시작 시각)
+  const SUBTITLES = [
+    { t: 4.0,   text: "남들은 다 앞서가는 것 같아 조급하고 막막한 마음이 들었군요." },
+    { t: 21.3,  text: "하지만 그 불안함을 알아차리고 있는 내 안의 주인공(主人空)은 어떤 평가에도 흔들리지 않습니다." },
+    { t: 41.5,  text: "미래에 대한 걱정과 완벽해야 한다는 부담감은 잠시 스쳐 가는 생각일 뿐이에요." },
+    { t: 61.1,  text: "결과가 어떻든 내 안의 주인공(主人空)이 가장 나다운 길로 이끌어 줄 거라 믿고 딱 맡겨보세요." },
+    { t: 81.7,  text: "무거운 고민 보따리는 주인공(主人空)에게 넘겨주고, 지금은 숨 쉬는 감각만 가만히 지켜봅니다." },
+    { t: 102.7, text: "생각의 소음이 멎고 지켜보는 그 자리에서 가장 나다운 지혜와 실행력이 깨어납니다." }
+  ];
+  const INTRO_SUBTITLE = SUBTITLES[0].text;   // 시작 직후부터 첫 줄을 보여줌
+
+  function setSubtitle(el, text) {
+    el.innerText = text;
+    el.classList.remove('sub-swap');
+    void el.offsetWidth;
+    el.classList.add('sub-swap');
+  }
+
+  function startStep3() {
+    if (!document.getElementById('step3').classList.contains('hidden')) return;
+    clearAllTimers();
+    document.getElementById('step2').classList.add('hidden');
+    showStep('step3');
+    setProgress(3);
+
+    document.getElementById('userTroubleDisplay').innerText = `${userTrouble}`;
+
+    const guide = document.getElementById('guideAudio');
+    const bgm = document.getElementById('bgmAudio');
+    try { guide.currentTime = 0; bgm.currentTime = 0; } catch (e) {}
+    bgm.volume = 0.25;
+    guide.volume = 1.0;
+    guide.play().catch(() => {});
+    bgm.play().catch(() => {});
+
+    const subEl = document.getElementById('subtitleText');
+    setSubtitle(subEl, INTRO_SUBTITLE);
+    const startedAt = Date.now();
+    let lastIdx = 0;
+    // 오디오가 재생 중이면 오디오 시간, 아니면(자동재생 차단 등) 경과 시간 기준
+    subInterval = setInterval(() => {
+      const t = (!guide.paused && guide.currentTime > 0) ? guide.currentTime : (Date.now() - startedAt) / 1000;
+      let idx = 0;
+      for (let i = 0; i < SUBTITLES.length; i++) if (t >= SUBTITLES[i].t) idx = i;
+      if (idx !== lastIdx) { lastIdx = idx; setSubtitle(subEl, SUBTITLES[idx].text); }
+    }, 250);
+
+    let timeLeft = 120;
+    document.getElementById('timer3').innerText = fmt(timeLeft);
+    setBar('bar3', 1);
+    step3Interval = setInterval(() => {
+      timeLeft--;
+      document.getElementById('timer3').innerText = fmt(Math.max(timeLeft, 0));
+      setBar('bar3', timeLeft / 120);
+      if (timeLeft <= 0) startStep4();
+    }, 1000);
+  }
+
+  function startStep4() {
+    clearAllTimers();
+    stopAudio();
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step3').classList.add('hidden');
+    showStep('step4');
+    setProgress(4);
+    updatePeace(document.getElementById('peaceRange'));
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function celebrate(n) {
+    const colors = ['#ffd98f', '#ffab84', '#ff8fab', '#b9a8ff', '#7fe3bd', '#e8553f'];
+    const box = document.createElement('div');
+    box.className = 'burst';
+    for (let i = 0; i < n; i++) {
+      const p = document.createElement('i');
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.background = colors[i % colors.length];
+      p.style.setProperty('--dx', (Math.random() * 30 - 15) + 'vw');
+      p.style.setProperty('--r', (Math.random() * 900 - 450) + 'deg');
+      p.style.animationDuration = (1.8 + Math.random() * 1.6) + 's';
+      p.style.animationDelay = (Math.random() * 0.4) + 's';
+      box.appendChild(p);
+    }
+    document.body.appendChild(box);
+    setTimeout(() => box.remove(), 4000);
+  }
+
+  function finishPractice() {
+    const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const resetFlow = () => {
+      document.getElementById('troubleInput').value = "";
+      document.getElementById('wisdomInput').value = "";
+      document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('step4').classList.add('hidden');
+      showStep('step1');
+      setProgress(1);
+    };
+
+    if (records.length >= 7) {
+      alert("이미 7일 챌린지를 모두 완료했어요! 🎉 출석부에서 리포트를 제출해 주세요.");
+      resetFlow();
+      switchTab('board');
+      return;
+    }
+
+    const peace = document.getElementById('peaceRange').value;
+    const action = document.getElementById('wisdomInput').value.trim() || "지금 눈앞에 있는 작은 할 일 하나부터 가볍게 시작하기";
+    const now = new Date();
+    const dateStr = `${now.getMonth()+1}월 ${now.getDate()}일 ${now.getHours()}시 ${now.getMinutes()}분`;
+
+    records.push({
+      day: records.length + 1,
+      date: dateStr,
+      trouble: userTrouble,
+      peace: Number(peace),
+      action: action
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+
+    justStamped = records.length;
+    resetFlow();
+    switchTab('board');
+    justStamped = 0;
+    celebrate(records.length === 7 ? 140 : 50);
+    if (records.length === 7) {
+      setTimeout(() => alert("🎉 축하해요! 7일 챌린지를 모두 완료했어요. 이름과 학번을 적고 리포트를 제출해 주세요."), 900);
+    }
+  }
+
+  function saveStudentInfo() {
+    const info = {
+      name: document.getElementById('studentName').value,
+      id: document.getElementById('studentId').value,
+      reflection: document.getElementById('finalReflection').value
+    };
+    localStorage.setItem(STUDENT_KEY, JSON.stringify(info));
+  }
+
+  function loadStudentInfo() {
+    const info = JSON.parse(localStorage.getItem(STUDENT_KEY) || "{}");
+    if (info.name) document.getElementById('studentName').value = info.name;
+    if (info.id) document.getElementById('studentId').value = info.id;
+    if (info.reflection) document.getElementById('finalReflection').value = info.reflection;
+  }
+
+  function renderBoard() {
+    const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const count = Math.min(records.length, 7);
+    document.getElementById('stampCountNav').innerText = count;
+    document.getElementById('brandCount').innerText = count;
+    document.getElementById('statDays').innerText = count;
+    document.getElementById('statLeft').innerText = 7 - count;
+    document.getElementById('statPeace').innerText = records.length
+      ? Math.round(records.reduce((sum, r) => sum + Number(r.peace), 0) / records.length) + '%'
+      : '–';
+    document.getElementById('completeMsg').classList.toggle('hidden', records.length < 7);
+
+    const boardEl = document.getElementById('stampBoard');
+    let html = "";
+    for (let i = 1; i <= 7; i++) {
+      const isStamped = i <= records.length;
+      html += `
+        <div class="stamp-slot">
+          <div class="stamp-circle ${isStamped ? 'stamped' : ''} ${i === justStamped ? 'just' : ''}" style="--rot:${SEAL_ROT[i - 1]}deg">
+            ${isStamped ? '觀' : i}
+          </div>
+          <span class="stamp-label">DAY ${i}</span>
+        </div>
+      `;
+    }
+    boardEl.innerHTML = html;
+
+    const listEl = document.getElementById('historyList');
+    if (records.length === 0) {
+      listEl.innerHTML = `<div class="history-card empty" style="text-align:center; color:var(--text-sub);">아직 출석 기록이 없습니다.<br>오늘 첫 5분 실습을 시작해 보세요!</div>`;
+      return;
+    }
+
+    listEl.innerHTML = records.slice().reverse().map(r => `
+      <div class="history-card">
+        <div class="history-header">
+          <span class="day">DAY ${r.day} 출석 완료</span>
+          <span class="meta">${r.date}<span class="peace-pill">${r.peace}%</span></span>
+        </div>
+        <div class="row t"><strong>맡긴 고민</strong>${esc(r.trouble)}</div>
+        <div class="row"><strong>작은 첫걸음</strong>${esc(r.action)}</div>
+      </div>
+    `).join('');
+  }
+
+  // 제출용 리포트 텍스트 생성 함수
+  function buildReportText() {
+    const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    if (records.length === 0) {
+      alert("아직 제출할 실습 기록이 없습니다. 먼저 5분 실습을 1회 이상 완료해 주세요!");
+      return null;
+    }
+
+    const name = document.getElementById('studentName').value.trim() || "미입력";
+    const studentId = document.getElementById('studentId').value.trim() || "미입력";
+    const reflection = document.getElementById('finalReflection').value.trim() || "꾸준히 내면의 주인공(主人空) 자리를 지켜보며 마음의 중심을 잡았습니다.";
+
+    const avgPeace = Math.round(records.reduce((sum, r) => sum + Number(r.peace), 0) / records.length);
+
+    let report = `[대학생 주인공(主人空) 관법 마음챙김 실습 리포트]\n`;
+    report += `----------------------------------------\n`;
+    report += `성명 : ${name} (${studentId})\n`;
+    report += `총 실습 횟수 : ${records.length}회 (평균 마음 평온도 : ${avgPeace}%)\n`;
+    report += `한 줄 소감 : ${reflection}\n`;
+    report += `----------------------------------------\n\n`;
+    report += `[일자별 상세 실습 일지]\n`;
+
+    records.forEach(r => {
+      report += `\n[DAY ${r.day}] ${r.date} (평온도 ${r.peace}%)\n`;
+      report += `- 주인공(主人空)에게 맡긴 고민 : ${r.trouble}\n`;
+      report += `- 실행한 작은 첫걸음 : ${r.action}\n`;
+    });
+
+    return report;
+  }
+
+  // 1. 클립보드 복사 (카톡/게시판 붙여넣기용)
+  function copyReportToClipboard() {
+    const reportText = buildReportText();
+    if (!reportText) return;
+
+    navigator.clipboard.writeText(reportText).then(() => {
+      alert("실습 리포트가 깔끔하게 복사되었습니다!\n카카오톡 오픈채팅방이나 과제 제출 게시판에 바로 붙여넣기(Ctrl+V) 해주세요.");
+    }).catch(() => {
+      alert("복사에 실패했습니다. 아래의 파일로 저장 버튼을 이용해 주세요.");
+    });
+  }
+
+  // 2. 텍스트 파일(.txt)로 바로 다운로드
+  function downloadReportFile() {
+    const reportText = buildReportText();
+    if (!reportText) return;
+
+    const name = document.getElementById('studentName').value.trim() || "학생";
+    const blob = new Blob([reportText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `주인공관법_실습리포트_${name}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function clearHistory() {
+    if (confirm("지금까지 쌓인 출석 기록을 모두 초기화할까요?")) {
+      localStorage.removeItem(STORAGE_KEY);
+      renderBoard();
+    }
+  }
+</script>
+
+<script>
+// ---- PWA: 서비스 워커 + 홈 화면에 추가 ----
+(function () {
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function (e) { console.warn('SW 등록 실패', e); });
+    });
+  }
+  var bar = document.getElementById('installBar');
+  var btn = document.getElementById('installBtn');
+  var tip = document.getElementById('installTip');
+  var DISMISS_KEY = 'juingong_install_dismissed';
+  var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var deferred = null;
+  function dismissed() { try { return localStorage.getItem(DISMISS_KEY) === '1'; } catch (e) { return false; } }
+  function show() { if (!standalone && !dismissed()) bar.classList.add('show'); }
+  function hide() { bar.classList.remove('show'); }
+  if (standalone) return;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault(); deferred = e;
+    tip.textContent = '앱처럼 쓰려면 홈 화면에 추가하세요.';
+    btn.style.display = '';
+    show();
+  });
+  window.addEventListener('appinstalled', function () { deferred = null; hide(); });
+  btn.addEventListener('click', function () {
+    if (!deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function () { deferred = null; hide(); });
+  });
+  document.getElementById('installClose').addEventListener('click', function () {
+    hide(); try { localStorage.setItem(DISMISS_KEY, '1'); } catch (e) {}
+  });
+  if (isIOS) {
+    tip.innerHTML = '<b>공유 버튼(□↑)</b> → <b>홈 화면에 추가</b>';
+    btn.style.display = 'none';
+    show();
+  }
+  window.matchMedia('(display-mode: standalone)').addEventListener && window.matchMedia('(display-mode: standalone)').addEventListener('change', function (e) { if (e.matches) hide(); });
+})();
+</script>
+
+</body>
+</html>

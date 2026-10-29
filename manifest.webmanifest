@@ -1,0 +1,20 @@
+{
+  "name": "7일 주인공(主人空) 챌린지",
+  "short_name": "주인공 챌린지",
+  "description": "대학생을 위한 하루 5분, 7일 주인공(主人空) 관법 챌린지 출석부",
+  "lang": "ko",
+  "dir": "ltr",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf6f1",
+  "theme_color": "#fbf6f1",
+  "categories": ["education", "lifestyle", "health"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
