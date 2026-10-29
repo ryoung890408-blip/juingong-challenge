@@ -1,5 +1,5 @@
 /* 7일 주인공(主人空) 챌린지 — Service Worker */
-const VERSION = 'v3';
+const VERSION = 'v4';
 const CACHE = 'juingong-challenge-' + VERSION;
 const PRECACHE = [
   './',

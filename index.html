@@ -318,6 +318,14 @@
       text-shadow: none;
     }
     .sub-swap { animation: rise 0.9s cubic-bezier(.2, .8, .2, 1) both; }
+    .sound-btn {
+      display: inline-flex; align-items: center; gap: 6px; margin: 6px 0 2px;
+      padding: 10px 16px; border-radius: 999px; cursor: pointer;
+      font: inherit; font-size: 0.86rem; font-weight: 800; color: var(--text-main);
+      background: var(--surface); border: 1.5px solid #ffab84;
+      box-shadow: 0 6px 16px rgba(255, 140, 110, 0.25);
+      animation: pulseBar 1.6s ease-in-out infinite;
+    }
 
     /* ===== 슬라이더 ===== */
     .slider-wrap {
@@ -542,6 +550,7 @@
       <audio id="bgmAudio" src="univ_bgm.mp3" loop></audio>
 
       <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <button class="sound-btn hidden" id="soundBtn" type="button" onclick="playStep3Audio()">🔊 소리가 안 들리면 눌러 주세요</button>
       <div class="subtitle-box" id="subtitleText"></div>
       <button class="btn" onclick="startStep4()">관법 마치기 · 실행 모드로 →</button>
     </div>
@@ -664,7 +673,29 @@
     document.getElementById('troubleInput').value = text;
   }
 
+  // 휴대폰(특히 아이폰)은 사용자가 직접 누른 순간에만 소리 재생을 허락하므로,
+  // 첫 버튼을 누를 때 두 오디오를 무음으로 한 번 재생했다 멈춰 잠금을 풀어 둔다.
+  function unlockAudio() {
+    ['guideAudio', 'bgmAudio'].forEach(id => {
+      const a = document.getElementById(id);
+      a.muted = true;
+      const p = a.play();
+      const done = () => { a.pause(); try { a.currentTime = 0; } catch (e) {} a.muted = false; };
+      if (p && p.then) p.then(done).catch(() => { a.muted = false; }); else done();
+    });
+  }
+
+  function playStep3Audio() {
+    const guide = document.getElementById('guideAudio');
+    const bgm = document.getElementById('bgmAudio');
+    const btn = document.getElementById('soundBtn');
+    btn.classList.add('hidden');
+    guide.play().catch(() => btn.classList.remove('hidden'));
+    bgm.play().catch(() => {});
+  }
+
   function submitTrouble() {
+    unlockAudio();
     const input = document.getElementById('troubleInput');
     userTrouble = input.value.trim() || "미래에 대한 막막함과 잘해야 한다는 부담감";
     input.classList.add('dissolve');
@@ -764,8 +795,7 @@
     try { guide.currentTime = 0; bgm.currentTime = 0; } catch (e) {}
     bgm.volume = 0.25;
     guide.volume = 1.0;
-    guide.play().catch(() => {});
-    bgm.play().catch(() => {});
+    playStep3Audio();
 
     const subEl = document.getElementById('subtitleText');
     setSubtitle(subEl, INTRO_SUBTITLE);
